@@ -70,9 +70,9 @@
                 <div class="card">
                     <div class="card-body">
                         <!-- 03. Searching -->
-                        <form id="todo-form" action="" method="get">
+                        <form id="todo-form" action="{{ route('todo') }}" method="get">
                             <div class="input-group mb-3">
-                                <input type="text" class="form-control" name="search" value="" 
+                                <input type="text" class="form-control" name="search" value="{{ request('search') }}" 
                                     placeholder="masukkan kata kunci">
                                 <button class="btn btn-secondary" type="submit">
                                     Cari
@@ -84,11 +84,20 @@
                             @foreach ($data as $item)
                             <!-- 04. Display Data -->
                             <li class="list-group-item d-flex justify-content-between align-items-center">
-                                <span class="task-text">{{ $item->task }}</span>
+                                <span class="task-text">
+                                    {!! $item->is_done == '1' ? '<del>' : '' !!}
+                                        {{ $item->task }}
+                                        {!! $item->is_done == '1' ? '</del>' : '' !!}
+                                </span>
                                 <input type="text" class="form-control edit-input" style="display: none;"
                                     value="{{ $item->task }}">
                                 <div class="btn-group">
-                                    <button class="btn btn-danger btn-sm delete-btn">✕</button>
+                                    <form action="{{ route('todo.delete', ['id'=> $item->id]) }}" method="POST" 
+                                        onsubmit="return confirm('Yakin akan menghapus data ini?')">
+                                        @csrf
+                                        @method('delete')
+                                        <button class="btn btn-danger btn-sm delete-btn">✕</button>
+                                    </form>
                                     <button class="btn btn-primary btn-sm edit-btn" data-bs-toggle="collapse"
                                         data-bs-target="#collapse-{{ $loop->index }}" aria-expanded="false">✎</button>
                                 </div>
@@ -121,7 +130,7 @@
                             </li>
                             @endforeach
                         </ul>
-                        
+                        {{ $data->links() }}
                         
                     </div>
                 </div>

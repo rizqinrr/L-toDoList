@@ -13,7 +13,14 @@ class TodoController extends Controller
      */
     public function index()
     {
-        $data = Todo::orderBy('task', 'asc')->get();
+        $max_data = 5;
+        if(request('search')){
+            $data = Todo::where('task', 'like', '%'.request('search').'%')->paginate($max_data)->withQueryString();
+
+        } else {
+
+            $data = Todo::orderBy('task', 'asc')->paginate($max_data);
+        }
         return view('toDo.app', compact('data'));
     }
 
@@ -89,6 +96,7 @@ class TodoController extends Controller
      */
     public function destroy(string $id)
     {
-        //
+        Todo::where('id', $id)->delete();
+        return redirect()->route('todo')->with('success', 'Berhasil menghapus data');
     }
 }
